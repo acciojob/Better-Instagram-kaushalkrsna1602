@@ -61,3 +61,11 @@ p {
 button {
   margin: 20px;
 }
+
+
+
+.selected {
+  border: 5px solid rgb(0, 195, 255);
+  opacity: 0.8;
+}
+
