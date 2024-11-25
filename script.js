@@ -1,47 +1,38 @@
-//your code here
-const parent = document.getElementById("parent");
+document.addEventListener("DOMContentLoaded", () => {
+  const draggables = document.querySelectorAll(".draggable");
+  const droppables = document.querySelectorAll(".droppable");
 
-let draggedElement = null;
+  draggables.forEach((draggable) => {
+    draggable.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", e.target.id);
+      setTimeout(() => {
+        draggable.classList.add("hide");
+      }, 0);
+    });
 
-// Add event listeners to all child elements
-parent.addEventListener("dragstart", (e) => {
-  if (e.target && e.target.classList.contains("image")) {
-    draggedElement = e.target;
-    e.target.classList.add("selected");
-  }
-});
+    draggable.addEventListener("dragend", () => {
+      draggable.classList.remove("hide");
+    });
+  });
 
-parent.addEventListener("dragover", (e) => {
-  e.preventDefault(); // Allow the drop
-});
+  droppables.forEach((droppable) => {
+    droppable.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      droppable.classList.add("over");
+    });
 
-parent.addEventListener("drop", (e) => {
-  if (e.target && e.target.classList.contains("image")) {
-    const droppedElement = e.target;
+    droppable.addEventListener("dragleave", () => {
+      droppable.classList.remove("over");
+    });
 
-    // Swap the innerHTML of dragged and dropped elements
-    const draggedHTML = draggedElement.innerHTML;
-    const droppedHTML = droppedElement.innerHTML;
-
-    draggedElement.innerHTML = droppedHTML;
-    droppedElement.innerHTML = draggedHTML;
-
-    // Swap background images of dragged and dropped elements
-    const draggedBg = draggedElement.style.backgroundImage;
-    const droppedBg = droppedElement.style.backgroundImage;
-
-    draggedElement.style.backgroundImage = droppedBg;
-    droppedElement.style.backgroundImage = draggedBg;
-  }
-
-  if (draggedElement) {
-    draggedElement.classList.remove("selected");
-  }
-  draggedElement = null;
-});
-
-parent.addEventListener("dragend", (e) => {
-  if (e.target && e.target.classList.contains("image")) {
-    e.target.classList.remove("selected");
-  }
+    droppable.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const draggableId = e.dataTransfer.getData("text/plain");
+      const draggableElement = document.getElementById(draggableId);
+      if (!droppable.contains(draggableElement)) {
+        droppable.appendChild(draggableElement);
+      }
+      droppable.classList.remove("over");
+    });
+  });
 });
