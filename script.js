@@ -1,38 +1,46 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const draggables = document.querySelectorAll(".draggable");
-  const droppables = document.querySelectorAll(".droppable");
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
 
-  draggables.forEach((draggable) => {
-    draggable.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", e.target.id);
-      setTimeout(() => {
-        draggable.classList.add("hide");
-      }, 0);
-    });
+const images = document.querySelectorAll(".image");
 
-    draggable.addEventListener("dragend", () => {
-      draggable.classList.remove("hide");
-    });
-  });
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
+}
 
-  droppables.forEach((droppable) => {
-    droppable.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      droppable.classList.add("over");
-    });
+function allowDrop(e) {
+  e.preventDefault();
+}
 
-    droppable.addEventListener("dragleave", () => {
-      droppable.classList.remove("over");
-    });
+function drop(e) {
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
+    }
+  }
 
-    droppable.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const draggableId = e.dataTransfer.getData("text/plain");
-      const draggableElement = document.getElementById(draggableId);
-      if (!droppable.contains(draggableElement)) {
-        droppable.appendChild(draggableElement);
-      }
-      droppable.classList.remove("over");
-    });
-  });
-});
+  dragdrop(clone);
+
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
+
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
+}
+
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+
+images.forEach(dragdrop);
